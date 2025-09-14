@@ -1,0 +1,35 @@
+{
+  "name": "playwright",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:report": "npx playwright test --reporter=html",
+    "report": "start playwright-report/index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tetja-na/Playwright.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tetja-na/Playwright/issues"
+  },
+  "homepage": "https://github.com/Tetja-na/Playwright#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "@types/node": "^24.3.3"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "playwright": "^1.55.0",
+    "playwright-core": "^1.55.0",
+    "undici-types": "^7.10.0"
+  }
+}
