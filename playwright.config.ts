@@ -1,14 +1,21 @@
 import { defineConfig, devices } from '@playwright/test';
+import * as dotenv from 'dotenv';
+import path from 'path';
+
+
+dotenv.config(); 
+
+console.log('✅ Loaded baseURL from env:', process.env.BASE_URL);
 
 export default defineConfig({
   use: {
-    baseURL: 'https://qauto.forstudy.space',
-    headless: true, // можна зробити false для дебага
+    baseURL: process.env.BASE_URL,
+    headless: true,
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     httpCredentials: {
-      username: 'guest',
-      password: 'welcome2qauto'
+      username: process.env.HTTP_USERNAME || '',
+      password: process.env.HTTP_PASSWORD || ''
     }
   },
 

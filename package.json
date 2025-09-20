@@ -7,7 +7,8 @@
     "test": "npx playwright test",
     "test:headed": "npx playwright test --headed",
     "test:report": "npx playwright test --reporter=html",
-    "report": "start playwright-report/index.html"
+    "report": "start playwright-report/index.html",
+    "test:stage": "ENV=stage npx playwright test"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,7 @@
     "test": "tests"
   },
   "dependencies": {
+    "dotenv": "^17.2.2",
     "playwright": "^1.55.0",
     "playwright-core": "^1.55.0",
     "undici-types": "^7.10.0"
