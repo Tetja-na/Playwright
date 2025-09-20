@@ -1,84 +1,98 @@
 import { test, expect } from '@playwright/test';
+import { RegistrationPage } from '../pages/RegistrationPage';
 
-test.describe('Registration form tests', () => {
-  const baseUrl = 'https://qauto.forstudy.space/';
-  const prefix = 'aqa'; // префікс для пошти
+test.describe('Registration form tests (POM)', () => {
+  const prefix = 'aqa';
 
   test.beforeEach(async ({ page }) => {
-    await page.goto(baseUrl, {
-      httpCredentials: { username: 'guest', password: 'welcome2qauto' }
-    });
-    await page.click('text=Sign up');
+    const registrationPage = new RegistrationPage(page);
+    await registrationPage.goto();
+    await registrationPage.openSignUpForm();
   });
 
-  // ✅ Positive: кнопка працює, відкривається гараж
   test('✅ Positive: successful registration', async ({ page }) => {
+    const registrationPage = new RegistrationPage(page);
     const email = `${prefix}-${Date.now()}@test.com`;
 
-    await page.fill('#signupName', 'Test');
-    await page.fill('#signupLastName', 'User');
-    await page.fill('#signupEmail', email);
-    await page.fill('#signupPassword', 'Test1234');
-    await page.fill('#signupRepeatPassword', 'Test1234');
+    await registrationPage.fillForm({
+      name: 'Test',
+      lastName: 'User',
+      email: email,
+      password: 'Test1234',
+      repeatPassword: 'Test1234',
+    });
 
-    // Кнопка активна
-    await expect(page.locator('button:has-text("Register")')).toBeEnabled();
+    expect(await registrationPage.isRegisterButtonEnabled()).toBe(true);
 
-    // Натискаємо і перевіряємо, що перейшли в гараж
-    await page.click('button:has-text("Register")');
+    await registrationPage.clickRegister();
     await expect(page).toHaveURL(/.*garage/);
   });
 
-  // ❌ Negative 1: пусте поле Name
   test('❌ Negative: empty name disables Register button', async ({ page }) => {
-    await page.fill('#signupLastName', 'User');
-    await page.fill('#signupEmail', `${prefix}-${Date.now()}@test.com`);
-    await page.fill('#signupPassword', 'Test1234');
-    await page.fill('#signupRepeatPassword', 'Test1234');
+    const registrationPage = new RegistrationPage(page);
 
-    await expect(page.locator('button:has-text("Register")')).toBeDisabled();
+    await registrationPage.fillForm({
+      lastName: 'User',
+      email: `${prefix}-${Date.now()}@test.com`,
+      password: 'Test1234',
+      repeatPassword: 'Test1234',
+    });
+
+    expect(await registrationPage.isRegisterButtonEnabled()).toBe(false);
   });
 
-  // ❌ Negative 2: некоректний email
   test('❌ Negative: invalid email disables Register button', async ({ page }) => {
-    await page.fill('#signupName', 'Test');
-    await page.fill('#signupLastName', 'User');
-    await page.fill('#signupEmail', 'invalidEmail');
-    await page.fill('#signupPassword', 'Test1234');
-    await page.fill('#signupRepeatPassword', 'Test1234');
+    const registrationPage = new RegistrationPage(page);
 
-    await expect(page.locator('button:has-text("Register")')).toBeDisabled();
+    await registrationPage.fillForm({
+      name: 'Test',
+      lastName: 'User',
+      email: 'invalidEmail',
+      password: 'Test1234',
+      repeatPassword: 'Test1234',
+    });
+
+    expect(await registrationPage.isRegisterButtonEnabled()).toBe(false);
   });
 
-  // ❌ Negative 3: пароль занадто короткий
   test('❌ Negative: short password disables Register button', async ({ page }) => {
-    await page.fill('#signupName', 'Test');
-    await page.fill('#signupLastName', 'User');
-    await page.fill('#signupEmail', `${prefix}-${Date.now()}@test.com`);
-    await page.fill('#signupPassword', '123');
-    await page.fill('#signupRepeatPassword', '123');
+    const registrationPage = new RegistrationPage(page);
 
-    await expect(page.locator('button:has-text("Register")')).toBeDisabled();
+    await registrationPage.fillForm({
+      name: 'Test',
+      lastName: 'User',
+      email: `${prefix}-${Date.now()}@test.com`,
+      password: '123',
+      repeatPassword: '123',
+    });
+
+    expect(await registrationPage.isRegisterButtonEnabled()).toBe(false);
   });
 
-  // ❌ Negative 4: паролі не співпадають
   test('❌ Negative: password mismatch disables Register button', async ({ page }) => {
-    await page.fill('#signupName', 'Test');
-    await page.fill('#signupLastName', 'User');
-    await page.fill('#signupEmail', `${prefix}-${Date.now()}@test.com`);
-    await page.fill('#signupPassword', 'Test1234');
-    await page.fill('#signupRepeatPassword', 'Other1234');
+    const registrationPage = new RegistrationPage(page);
 
-    await expect(page.locator('button:has-text("Register")')).toBeDisabled();
+    await registrationPage.fillForm({
+      name: 'Test',
+      lastName: 'User',
+      email: `${prefix}-${Date.now()}@test.com`,
+      password: 'Test1234',
+      repeatPassword: 'Other1234',
+    });
+
+    expect(await registrationPage.isRegisterButtonEnabled()).toBe(false);
   });
 
-  // ❌ Negative 5: пусте поле Last Name
   test('❌ Negative: empty last name disables Register button', async ({ page }) => {
-    await page.fill('#signupName', 'Test');
-    await page.fill('#signupEmail', `${prefix}-${Date.now()}@test.com`);
-    await page.fill('#signupPassword', 'Test1234');
-    await page.fill('#signupRepeatPassword', 'Test1234');
+    const registrationPage = new RegistrationPage(page);
 
-    await expect(page.locator('button:has-text("Register")')).toBeDisabled();
+    await registrationPage.fillForm({
+      name: 'Test',
+      email: `${prefix}-${Date.now()}@test.com`,
+      password: 'Test1234',
+      repeatPassword: 'Test1234',
+    });
+
+    expect(await registrationPage.isRegisterButtonEnabled()).toBe(false);
   });
 });
