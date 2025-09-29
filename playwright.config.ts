@@ -8,7 +8,9 @@ console.log('✅ Loaded baseURL from env:', process.env.BASE_URL);
 
 export default defineConfig({
   // 🔹 крок 1: запускаємо setup перед тестами
-  globalSetup: path.resolve(__dirname, './tests/setup/global-setup.ts'),
+  testDir: path.join(__dirname, 'tests'),
+  
+ // globalSetup: path.resolve(__dirname, './tests/setup/global-setup.ts'),
 
   use: {
     baseURL: process.env.BASE_URL,

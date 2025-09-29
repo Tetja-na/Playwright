@@ -1,32 +1,23 @@
-import { chromium } from '@playwright/test';
+// tests/setupStorage.spec.ts
+import { test, chromium } from '@playwright/test';
 import path from 'path';
 import dotenv from 'dotenv';
-
 dotenv.config();
 
-(async () => {
+test('create storage state', async () => {
   const browser = await chromium.launch();
   const page = await browser.newPage();
 
-  // HTTP Auth, якщо потрібно
-  await page.goto(process.env.BASE_URL || 'https://qauto.forstudy.space', {
-    waitUntil: 'networkidle',
-  });
-
-  // логін через форму
+  await page.goto(process.env.BASE_URL!);
   await page.fill('#username', process.env.USER_EMAIL!);
   await page.fill('#password', process.env.USER_PASSWORD!);
   await page.click('#loginBtn');
 
-  // чекаємо, поки з'явиться елемент гаража
   await page.waitForSelector('#garageLink');
 
-  // зберігаємо storage state
-  const storagePath = path.resolve(__dirname, 'storage/loggedUser.json');
+  const storagePath = path.resolve(__dirname, '../storage/loggedUser.json');
   await page.context().storageState({ path: storagePath });
   console.log('✅ Storage state saved at', storagePath);
 
   await browser.close();
-})();
-
-
+});
