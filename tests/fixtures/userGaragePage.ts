@@ -1,13 +1,12 @@
-import { test as base, expect, Page } from '@playwright/test';
+import { test as base } from '@playwright/test';
+import { GaragePage } from '../pages/GaragePage';
 
-export const test = base.extend<{
-  userGaragePage: Page; // тут явно вказуємо, що наша фікстура повертає сторінку
-}>({
-  userGaragePage: async ({ page }, use: (page: Page) => Promise<void>) => {
-    await page.goto('/panel/garage'); // відкриваємо гараж
-    await use(page); // віддаємо сторінку у тест
+export const test = base.extend<{ userGaragePage: GaragePage }>({
+  userGaragePage: async ({ page }, use) => {
+    const garagePage = new GaragePage(page);
+    await page.goto('/panel/garage'); // відкриваємо гараж одразу
+    await use(garagePage);
   },
 });
 
-export { expect };
-
+export { expect } from '@playwright/test';
