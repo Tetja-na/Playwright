@@ -1,48 +1,23 @@
 import { chromium, FullConfig } from '@playwright/test';
-import * as dotenv from 'dotenv';
-
+import dotenv from 'dotenv';
 dotenv.config();
 
-async function globalSetup(config: FullConfig) {
-  const baseURL = process.env.BASE_URL!;
-  const httpUsername = process.env.HTTP_USERNAME!;
-  const httpPassword = process.env.HTTP_PASSWORD!;
+export default async function globalSetup(config: FullConfig) {
+  const browser = await chromium.launch(); // 👈 правильний запуск браузера
+  const page = await browser.newPage();
 
-  const userEmail = process.env.USER_EMAIL!;
-  const userPassword = process.env.USER_PASSWORD!;
+  await page.goto('https://qauto.forstudy.space/login');
 
-  const browser = await chromium.launch({ headless: false });
-  const context = await browser.newContext({
-    baseURL,
-    httpCredentials: {
-      username: httpUsername,
-      password: httpPassword,
-    },
-  });
+  await page.fill('#email', process.env.USER_EMAIL || '');
+  await page.fill('#password', process.env.USER_PASSWORD || '');
+  await page.click('button[type="submit"]');
 
-  const page = await context.newPage();
+  // Очікуємо на редирект після логіну
+  await page.waitForURL('**/garage');
 
-  console.log('Переходимо на сайт:', baseURL);
-  await page.goto(baseURL, { waitUntil: 'domcontentloaded', timeout: 30000 });
+  // Зберігаємо сесію
+  await page.context().storageState({ path: 'auth.json' });
 
-  console.log(' Поточна сторінка після goto:', page.url());
-
-  // Чекаємо появи кнопки "Sign In"
-  await page.waitForSelector('button:has-text("Sign In")', { timeout: 20000 });
-  console.log('Кнопка Sign In знайдена');
-
-  await page.locator('button:has-text("Sign In")').click();
-
-  await page.fill('#signinEmail', userEmail);
-  await page.fill('#signinPassword', userPassword);
-  await page.getByRole('button', { name: /login/i }).click();
-
-  await page.waitForURL('**/panel/garage', { timeout: 15000 });
-  console.log('Успішно зайшли в гараж:', page.url());
-
-  await context.storageState({ path: 'storageState.json' });
   await browser.close();
 }
-
-export default globalSetup;
 
